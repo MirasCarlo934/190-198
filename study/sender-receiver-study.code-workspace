@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "190-198-lora32-sender"
+		},
+		{
+			"name": "LoRaSENSE-ESP32",
+			"path": "..\\..\\LoRaSENSE-ESP32"
+		},
+		{
+			"name": "esp32-sensors",
+			"path": "esp32-sensors"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"deque": "cpp",
+			"string": "cpp",
+			"vector": "cpp",
+			"new": "cpp"
+		}
+	}
+}

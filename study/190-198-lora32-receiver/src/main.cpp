@@ -97,18 +97,24 @@ void loop() {
     Serial.print(" with RSSI ");    
     Serial.println(rssi);
 
-   // Dsiplay information
-   display.clearDisplay();
-   display.setCursor(0,0);
-   display.print("LORA RECEIVER");
-   display.setCursor(0,20);
-   display.print("Received packet:");
-   display.setCursor(0,30);
-   display.print(LoRaData);
-   display.setCursor(0,40);
-   display.print("RSSI:");
-   display.setCursor(30,40);
-   display.print(rssi);
-   display.display();   
+    // Dsiplay information
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.print("LORA RECEIVER");
+    display.setCursor(0,20);
+    display.print("Received packet:");
+    display.setCursor(0,30);
+    display.print(LoRaData);
+    display.setCursor(0,40);
+    display.print("RSSI:");
+    display.setCursor(30,40);
+    display.print(rssi);
+    display.display();
+
+    //send ACK
+    delay(1000);
+    LoRa.beginPacket();
+    LoRa.print("ACK ");
+    LoRa.endPacket(true);   
   }
 }
