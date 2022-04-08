@@ -1,15 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "190-198-lora32-sender"
-		},
-		{
-			"name": "LoRaSENSE-ESP32",
-			"path": "..\\..\\LoRaSENSE-ESP32"
-		},
-		{
-			"name": "esp32-sensors",
-			"path": "esp32-sensors"
+			"name": "LoRa32-SANDBOX",
+			"path": "LoRa32-SANDBOX"
 		}
 	],
 	"settings": {
@@ -17,7 +10,13 @@
 			"deque": "cpp",
 			"string": "cpp",
 			"vector": "cpp",
-			"new": "cpp"
+			"new": "cpp",
+			"random": "cpp",
+			"fstream": "cpp",
+			"istream": "cpp",
+			"ostream": "cpp",
+			"sstream": "cpp",
+			"cmath": "cpp"
 		}
 	}
 }

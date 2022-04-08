@@ -1,0 +1,134 @@
+#include <Arduino.h>
+
+// the number of the LED pin
+const int ledPin = 25;
+const int npnPin = 15;
+const int dataPin = 34;
+const int pwmMeasurePin = 35;
+
+// setting PWM properties
+const int freq = 5000;
+const int ledChannel = 0;
+const int resolution = 8;
+
+long reading = false;
+long last_switch = 0;
+
+int dutyCycle = 0;
+
+long pwm_width = 0;
+
+int findPwmDutyCycle(float level) {
+    float pwmValue = 0;
+    float pwmVolts = 0;
+    int dutyCycle = 0;
+
+    ledcWrite(ledChannel, 0);   // turn off NPN transistor to get 5V in GND pin
+
+    do { 
+        // measure GND pin value
+        pwmValue = 0;
+        for (int a = 0; a < 100; ++a) {
+            int pwmReading = analogRead(pwmMeasurePin);
+            pwmValue += pwmReading;
+            delay(1);
+        }
+        pwmValue *= 0.01;   // average GND pin value
+        pwmVolts = (3.3 / 4095.0) * pwmValue;
+        Serial.printf("Duty Cycle: %i, Volts: %f, Raw: %f\n", dutyCycle, pwmVolts, pwmValue);
+        ledcWrite(ledChannel, dutyCycle);
+        ++dutyCycle;
+        if (dutyCycle > 255) break;
+        delay(20);
+    } while (pwmVolts < level);
+
+    return dutyCycle;
+}
+
+void setup() {
+    Serial.begin(115200); 
+
+    pinMode(npnPin, OUTPUT);
+    pinMode(dataPin, INPUT);
+    pinMode(pwmMeasurePin, INPUT);
+
+    // analogReadResolution(8);
+    // analogSetAttenuation(ADC_11db);
+
+    ledcSetup(ledChannel, freq, resolution);
+    ledcAttachPin(ledPin, ledChannel);
+    ledcAttachPin(npnPin, ledChannel);
+
+    // ledcWrite(ledChannel, 128);
+
+    dutyCycle = findPwmDutyCycle(3.6);  // need 3.6V at GND pin to get 1.4V across MQ-7 sensor
+    // configure LED PWM functionalitites
+    // ledcSetup(ledChannel, freq, resolution);
+    
+    // attach the channel to the GPIO to be controlled
+    // ledcAttachPin(ledPin, ledChannel);
+
+    last_switch = millis();
+}
+
+void loop() {
+    // float pwmValue = 0;
+    // for (int a = 0; a < 1000; ++a) {
+    //     int pwmReading = analogRead(pwmMeasurePin);
+    //     pwmValue += pwmReading;
+    //     // Serial.printf("RAW PWM VALUE: %f\n", pwmReading);
+    //     delay(1);
+    // }
+    // Serial.printf("RAW PWM READING: %f\n", pwmValue);
+    // Serial.printf("AVG PWM READING: %f\n", pwmValue * 0.01);
+
+    // pwm_width = pulseIn(pwmMeasurePin, HIGH);
+    // Serial.println(pwm_width);
+    // Serial.println();
+
+    bool changeMode = false;
+
+    if (reading) {
+        if ((millis() - last_switch) < 9000) {
+            Serial.println(analogRead(dataPin));
+        } else {
+            changeMode = true;
+        }
+    } else {
+        float gnd_pin_v = (5.0 / 4095.0) * analogRead(pwmMeasurePin);
+        Serial.printf("\nGND pin voltage: %f", gnd_pin_v); 
+        Serial.print(".");
+        if ((millis() - last_switch) > 6000) {
+            changeMode = true;
+        }
+    }
+
+    if (changeMode) {
+        if (reading) {
+            Serial.print("\n\nHEATING:\n");
+            ledcWrite(ledChannel, 255);
+        } else {
+            Serial.print("\n\nREADING\n");
+            ledcWrite(ledChannel, dutyCycle);
+        }
+        reading = !reading;
+        last_switch = millis();
+        changeMode = false;
+    }
+
+    // // increase the LED brightness
+    // for(int dutyCycle = 0; dutyCycle <= 255; dutyCycle++){   
+    //     // changing the LED brightness with PWM
+    //     ledcWrite(ledChannel, dutyCycle);
+    //     delay(15);
+    // }
+
+    // // decrease the LED brightness
+    // for(int dutyCycle = 255; dutyCycle >= 0; dutyCycle--){
+    //     // changing the LED brightness with PWM
+    //     ledcWrite(ledChannel, dutyCycle);   
+    //     delay(15);
+    // }
+
+    delay(500);
+}
