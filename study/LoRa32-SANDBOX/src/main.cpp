@@ -1,49 +1,53 @@
 #include <Arduino.h>
-#include "MQ7.h"
 
-#define RELAY_PIN 25
-#define DATA_PIN 34
-#define MQ7_VCC 5.0
+//Libraries for OLED Display
+#include <Wire.h>
+#include <Adafruit_BusIO_Register.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
-const int freq = 5000;
-const int ledChannel = 0;
-const int resolution = 8;
+//OLED pins
+#define OLED_SDA 21
+#define OLED_SCL 22 
+#define OLED_RST 16
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-MQ7 mq7(DATA_PIN, MQ7_VCC);
+//Screen
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RST);
+
+void displayText(char* text, int textSize, int rotation) {
+    display.setTextSize(textSize);
+    display.setRotation(rotation);
+    display.print(text);
+    display.display();
+}
 
 void setup() {
-    Serial.begin(115200);
+    //initialize OLED
+    Wire.begin(OLED_SDA, OLED_SCL);
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false, false)) { // Address 0x3C for 128x32
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;); // Don't proceed, loop forever
+    }
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
 
-    pinMode(RELAY_PIN, OUTPUT);
-    pinMode(DATA_PIN, INPUT);
+    // displayText("KAMI", 5, 0);
+
+    // display.setTextSize(4);
+    // display.setRotation(2);
+    // displayText("NAGPA", 4, 2);
+
+    // displayText("GRAD", 5, 0);
+
+    // display.setTextSize(6);
+    // displayText("KAY", 6, 0);
+
+    displayText("CARLO", 4, 2);
 }
 
 void loop() {
-    // Serial.println("HIGH");
-    // digitalWrite(RELAY_PIN, HIGH);
-    // delay(5000);
-    // Serial.println("LOW");
-    // digitalWrite(RELAY_PIN, LOW);
-    // delay(5000);
-    float co = 0;
 
-    Serial.print("HEATING");
-    digitalWrite(RELAY_PIN, HIGH);
-    for (int i = 0; i < 60; ++i) {
-        Serial.print(".");
-        delay(1000);
-    }
-
-    Serial.printf("\nREADING");
-    digitalWrite(RELAY_PIN, LOW);
-    for (int i = 0; i < 90; ++i) {
-        Serial.print(".");
-        float co_ppm = mq7.getPPM();
-        if (!isnan(co_ppm)) {
-            co += co_ppm;
-        }
-        // Serial.println(co_ppm);
-        delay(1000);
-    }
-    Serial.printf("\nAVERAGE CO: %f\n\n", co/90);
 }
