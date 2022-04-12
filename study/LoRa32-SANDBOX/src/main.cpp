@@ -35,17 +35,22 @@ void setup() {
     display.setCursor(0,0);
 
     // displayText("KAMI", 5, 0);
+    displayText("NEVER", 4, 0);
 
     // display.setTextSize(4);
     // display.setRotation(2);
     // displayText("NAGPA", 4, 2);
+    displayText("GONNA", 4, 2);
 
     // displayText("GRAD", 5, 0);
+    displayText("GIVE", 5, 0);
 
     // display.setTextSize(6);
     // displayText("KAY", 6, 0);
+    displayText("YOU", 6, 0);
 
-    displayText("CARLO", 4, 2);
+    // displayText("CARLO", 4, 2);
+    displayText("UP", 7, 0);
 }
 
 void loop() {
